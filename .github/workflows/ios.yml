@@ -210,11 +210,6 @@ jobs:
           xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=13.0 -isysroot $SDK_PATH -c /tmp/sdlmain_ios.c -o /tmp/sdlmain_ios.o
           ar rcs dependencies/ios/libSDLMain.a /tmp/sdlmain_ios.o
 
-      - name: Create stubs for missing symbols
-        run: |
-          printf '#include <cstdio>\nchar savePath[0x100];\nint GetSceneID(unsigned char listID, const char *sceneName) { return -1; }\n' > /tmp/modapi_stub.cpp
-          xcrun -sdk iphoneos clang++ -arch arm64 -std=gnu++14 -miphoneos-version-min=13.0 -c /tmp/modapi_stub.cpp -o /tmp/modapi_stub.o
-          ar rcs dependencies/ios/libModAPIStub.a /tmp/modapi_stub.o
 
       - name: Build RSDKv3 iOS
         run: |
@@ -229,7 +224,7 @@ jobs:
             LIBRARY_SEARCH_PATHS="$(pwd)/dependencies/ios $(pwd)/ios-deps/lib" \
             OTHER_LDFLAGS='-lModAPIStub -framework AVFoundation -framework AudioToolbox -framework CoreAudio -framework CoreBluetooth -framework CoreGraphics -framework CoreHaptics -framework CoreMotion -framework Foundation -framework GameController -framework Metal -framework OpenGLES -framework QuartzCore -framework UIKit' \
             HEADER_SEARCH_PATHS="$(pwd)/ios-deps/include $(pwd)/ios-deps/include/SDL2 $(pwd)/ios-deps/include/vorbis $(pwd)/ios-deps/include/ogg $(pwd)/ios-deps/include/theora $(pwd)/SonicCDDecomp $(pwd)/dependencies/all/theoraplay" \
-            GCC_PREPROCESSOR_DEFINITIONS='RETRO_USING_OPENGL=0 RETRO_USE_MOD_LOADER=0 $(inherited)' \
+            GCC_PREPROCESSOR_DEFINITIONS='RETRO_USING_OPENGL=0 RETRO_USE_MOD_LOADER=1 $(inherited)' \
             OTHER_CFLAGS='-Wno-deprecated-declarations -Wno-nonportable-include-path'
 
       - name: Package IPA
