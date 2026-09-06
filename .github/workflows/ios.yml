@@ -210,6 +210,11 @@ jobs:
           xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=13.0 -isysroot $SDK_PATH -c /tmp/sdlmain_ios.c -o /tmp/sdlmain_ios.o
           ar rcs dependencies/ios/libSDLMain.a /tmp/sdlmain_ios.o
 
+      - name: Create stubs for missing symbols
+        run: |
+          printf '#include <cstdio>\nchar savePath[0x100];\nint GetSceneID(unsigned char listID, const char *sceneName) { return -1; }\n' > /tmp/modapi_stub.cpp
+          xcrun -sdk iphoneos clang++ -arch arm64 -std=gnu++14 -miphoneos-version-min=13.0 -c /tmp/modapi_stub.cpp -o /tmp/modapi_stub.o
+          ar rcs dependencies/ios/libModAPIStub.a /tmp/modapi_stub.o
 
       - name: Build RSDKv3 iOS
         run: |
