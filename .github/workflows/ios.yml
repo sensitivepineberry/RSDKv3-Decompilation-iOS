@@ -67,10 +67,11 @@ jobs:
 
           # === iOS: set gamePath to Documents so all game files load from there ===
 
-          # 1) InitUserdata: add iOS block to set gamePath = Documents
+          #          # 1) InitUserdata: add iOS block to set gamePath = Documents
           perl -i -pe 'if (/^#elif RETRO_PLATFORM == RETRO_ANDROID/ && !$done++) {
-            print "#elif RETRO_PLATFORM == RETRO_iOS\n    sprintf(gamePath, \"%s/\", getDocumentsPath());\n    copyBundleDataToDocuments();\n";
+            print "#elif RETRO_PLATFORM == RETRO_iOS\n    sprintf(gamePath, \"%s/\", getDocumentsPath());\n    copyBundleDataToDocuments();\n#if RETRO_USE_MOD_LOADER\n    sprintf(modsPath, \"%s/\", getDocumentsPath());\n#endif\n";
           }' RSDKv3/Userdata.cpp
+
 
           # 2) RetroEngine::Init: load Data.rsdk from gamePath on iOS
           perl -i -0pe 's/(disableFocusPause = 0;[^\n]*\n)(#else)/$1#elif RETRO_PLATFORM == RETRO_iOS\n    StrCopy(dest, gamePath);\n    StrAdd(dest, Engine.dataFile);\n$2/' RSDKv3/RetroEngine.cpp
