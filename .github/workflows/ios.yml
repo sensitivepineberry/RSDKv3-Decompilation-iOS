@@ -228,7 +228,7 @@ jobs:
             FRAMEWORK_SEARCH_PATHS="$(pwd)/dependencies/ios" \
             LIBRARY_SEARCH_PATHS="$(pwd)/dependencies/ios $(pwd)/ios-deps/lib" \
             OTHER_LDFLAGS='-lModAPIStub -framework AVFoundation -framework AudioToolbox -framework CoreAudio -framework CoreBluetooth -framework CoreGraphics -framework CoreHaptics -framework CoreMotion -framework Foundation -framework GameController -framework Metal -framework OpenGLES -framework QuartzCore -framework UIKit' \
-            HEADER_SEARCH_PATHS="$(pwd)/ios-deps/include $(pwd)/ios-deps/include/SDL2 $(pwd)/ios-deps/include/vorbis $(pwd)/ios-deps/include/ogg $(pwd)/ios-deps/include/theora $(pwd)/SonicCDDecomp $(pwd)/dependencies/all/theoraplay" \
+            HEADER_SEARCH_PATHS="$(pwd)/ios-deps/include $(pwd)/ios-deps/include/SDL2 $(pwd)/ios-deps/include/vorbis $(pwd)/ios-deps/include/ogg $(pwd)/ios-deps/include/theora $(pwd)/SonicCDDecomp $(pwd)/dependencies/all/theoraplay $(pwd)/dependencies/all/tinyxml2" \
             GCC_PREPROCESSOR_DEFINITIONS='RETRO_USING_OPENGL=0 RETRO_USE_MOD_LOADER=1 $(inherited)' \
             OTHER_CFLAGS='-Wno-deprecated-declarations -Wno-nonportable-include-path'
 
