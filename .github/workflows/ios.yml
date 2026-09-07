@@ -97,6 +97,9 @@ jobs:
           # Replace SDL_PIXELFORMAT_YV12 with SDL_PIXELFORMAT_ARGB8888 for iOS in SetupVideoBuffer
           perl -i -pe 's/SDL_PIXELFORMAT_YV12/SDL_PIXELFORMAT_ABGR8888/ if /SDL_CreateTexture/ && $. > 330' RSDKv3/Video.cpp
 
+      - name: Fix ModAPI.cpp mod path resolution (iOS sandbox path collision)
+        run: python3 tools/fix_modapi_ios.py
+
       - name: Generate iOS icons from Android icon
         run: |
           SRC="android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
