@@ -217,6 +217,78 @@ jobs:
           xcrun -sdk iphoneos clang++ -arch arm64 -std=gnu++14 -miphoneos-version-min=13.0 -c /tmp/modapi_stub.cpp -o /tmp/modapi_stub.o
           ar rcs dependencies/ios/libModAPIStub.a /tmp/modapi_stub.o
 
+                - name: Fix ModAPI.cpp mod path resolution (iOS sandbox path collision)
+        run: |
+          python3 - <<'PYEOF'
+path = "RSDKv3/ModAPI.cpp"
+with open(path) as f:
+    src = f.read()
+
+def block(label):
+    return '''                    char folderTest[4][0x10] = {{
+                        "{L}/",
+                        "{L}\\\\",
+                        "{l}/",
+                        "{l}\\\\",
+                    }};
+                    int tokenPos = -1;
+                    for (int i = 0; i < 4; ++i) {{
+                        tokenPos = FindStringToken(modBuf, folderTest[i], 1);
+                        if (tokenPos >= 0)
+                            break;
+                    }}
+
+                    if (tokenPos >= 0) {{
+                        char buffer[0x100];
+                        for (int i = StrLength(modBuf); i >= tokenPos; --i) {{
+                            buffer[i - tokenPos] = modBuf[i] == '\\\\' ? '/' : modBuf[i];
+                        }}
+
+                        // PrintLog(modBuf);
+                        std::string path(buffer);
+                        std::string modPath(modBuf);
+                        char pathLower[0x100];
+                        memset(pathLower, 0, sizeof(char) * 0x100);
+                        for (int c = 0; c < path.size(); ++c) {{
+                            pathLower[c] = tolower(path.c_str()[c]);
+                        }}
+
+                        info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
+                    }}'''.format(L=label, l=label.lower())
+
+def fixed(label, basevar):
+    return '''                    std::string relStr = fs::relative(data_de.path(), {B}).generic_string();
+                    std::string path    = "{L}/" + relStr;
+                    std::string modPath(modBuf);
+                    char pathLower[0x100];
+                    memset(pathLower, 0, sizeof(char) * 0x100);
+                    for (int c = 0; c < (int)path.size() && c < 0x100; ++c) {{
+                        pathLower[c] = tolower(path.c_str()[c]);
+                    }}
+
+                    info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));'''.format(B=basevar, L=label)
+
+pairs = [
+    ("Data", "dataPath"),
+    ("Scripts", "scriptPath"),
+    ("Videos", "videosPath"),
+]
+
+for label, basevar in pairs:
+    old = block(label)
+    new = fixed(label, basevar)
+    count = src.count(old)
+    if count != 1:
+        raise SystemExit(f"Expected exactly 1 match for {label} block, found {count}")
+    src = src.replace(old, new, 1)
+
+with open(path, "w") as f:
+    f.write(src)
+
+print("ModAPI.cpp patched successfully")
+PYEOF
+
+
       - name: Build RSDKv3 iOS
         run: |
           xcodebuild -project "RSDKv3 ios.xcodeproj" \
