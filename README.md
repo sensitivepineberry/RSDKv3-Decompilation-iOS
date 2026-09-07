@@ -7,6 +7,7 @@ Based on [RSDKModding/RSDKv3-Decompilation](https://github.com/RSDKModding/RSDKv
 ## Features
 - Native ARM64 build optimized for iOS 13.0+
 - Full touchscreen controls
+- Mod support (in progress)
 - Landscape orientation support (iPhone & iPad)
 - File sharing enabled — manage game files directly from the iOS Files app
 - No copyrighted game assets included
@@ -35,6 +36,10 @@ Edit `settings.ini` in the Files app to customize:
 - `DevMenu` — enable developer menu
 - `BGMVolume` / `SFXVolume` — audio levels
 - `DisableTouchControls` — toggle touch input
+- `txtScripts` - text scripts.
+
+## Okay, that’s cool and all, but how do I use MODS???
+First, grab the Scripts folder from [here](https://github.com/RSDKModding/RSDKv3-Script-Decompilation). Put the `Scripts` folder in files along with Data.rsdk. Then create a folder named `mods` and put the mods folders in there. You’ll need to activate devmode to manage mods more easily, but otherwise you’ll be fine. (filenames are case sensitive, so make sure they’re the same as here!)
 
 ## Building from Source
 
